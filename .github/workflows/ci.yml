@@ -104,15 +104,46 @@ jobs:
 
 
   # =========================================================
+  # Frontend Tests (Task 7.2C)
+  # =========================================================
+  # Vitest unit tests for the React frontend. If this job fails,
+  # build-and-push does not run because of the needs list below.
+  frontend-test:
+    name: Test frontend
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm run test:run
+
+
+  # =========================================================
   # Build and Push Docker Images
   # =========================================================
   build-and-push:
     name: Build and Push ${{ matrix.image }}
     runs-on: ubuntu-latest
 
-    # All backend tests must pass before this job starts
+    # Backend and frontend tests must all pass before images are stored
     needs:
       - backend-test
+      - frontend-test
 
     # Build and push when code is pushed to main or manually triggered
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
