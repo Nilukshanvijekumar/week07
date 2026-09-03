@@ -1,7 +1,12 @@
 name: CI Pipeline
 
 on:
-  # Manual trigger for the workflow
+  # Run the pipeline when code is pushed to main
+  push:
+    branches:
+      - main
+
+  # Manual trigger from the GitHub Actions tab
   workflow_dispatch:
 
 
@@ -77,11 +82,12 @@ jobs:
 
     steps:
 
+      # checkout@v6 and setup-python@v6 run on Node 24 (fixes Node 20 deprecation warning)
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -136,11 +142,12 @@ jobs:
 
     steps:
 
+      # checkout@v6 and azure/login@v3 run on Node 24 (fixes Node 20 deprecation warning)
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
